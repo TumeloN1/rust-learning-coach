@@ -1,6 +1,6 @@
 # Rust Steps
 
-An adaptive, terminal-based Rust learning coach. It starts with core concepts and uses recent journal results to revisit topics where you scored below 3/5. Type answers in your own words; later exercises ask you to explain and write Rust code.
+An adaptive, terminal-based Rust learning coach. It presents a lesson overview, goals, and a small example before each quiz. After you answer, it gives a score, explains the idea, identifies a concept to revisit, and recommends what to study next.
 
 ## Run
 
@@ -8,10 +8,8 @@ An adaptive, terminal-based Rust learning coach. It starts with core concepts an
 cargo run
 ```
 
-Set `TYPESAFE_API_KEY` to enable the TypeSafe Jev grader. Jev is used for a structured understanding score and a primary concept diagnosis; the app turns those decisions into learner-friendly feedback. Without a key, a clearly labeled local fallback lets you explore the flow. Set `JEV_MODEL` to pin a model version if desired.
+Set `TYPESAFE_API_KEY` in your shell to enable TypeSafe Jev's structured score and concept diagnosis. Jev returns decisions, not prose; Rust Steps turns the result into written teaching feedback using its lesson guide. Without a key, the app labels and uses a basic local length-based score. Set `JEV_MODEL` to pin a model version if desired.
 
-The default journal path points to the sibling learner repository. Override it with `RUST_COACH_JOURNAL=/path/to/session.jsonl`. Answers are saved as JSON Lines; avoid committing secrets or answers you want to keep private.
+After every completed exercise, the app appends a progress record to the sibling journal repo, creates a readable Markdown page under `sessions/`, commits both artifacts, and pushes them to `origin`. Make sure the journal repo is cloned/available at `../rust-learning-journal` and has a working GitHub remote and authentication. Override the JSONL location with `RUST_COACH_JOURNAL=/path/to/journal/responses/session.jsonl`; with custom paths, the Markdown session folder and Git repo root are inferred from the same journal directory layout.
 
-## Two-repository setup
-
-This is the tool repository. The sibling `rust-learning-journal` repository stores your attempts and grader feedback. Configure a private remote for that repo if you want your learning history private, or make it public if you want a public exercise log. The app never commits or pushes your responses automatically.
+The exercise set is curated in the source code. `cargo run` presents one exercise per run; there is no automatic schedule.
