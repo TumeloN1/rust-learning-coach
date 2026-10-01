@@ -1,0 +1,10 @@
+[package]
+name = "rust-learning-coach"
+version = "0.1.0"
+edition = "2024"
+description = "An adaptive command-line Rust tutor powered by TypeSafe Jev"
+
+[dependencies]
+reqwest = { version = "0.12", features = ["blocking", "json"] }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
