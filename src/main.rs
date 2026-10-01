@@ -21,7 +21,7 @@ const EXERCISES: &[Exercise] = &[
 #[derive(Serialize, Deserialize)] struct Record { timestamp: u64, exercise_id: String, topic: String, level: u8, answer: String, score: u8, confidence: Option<f64>, diagnosis: String, feedback: String, next_exercise: String, grader: String }
 fn input(prompt: &str) -> String { print!("{prompt}"); let _=io::stdout().flush(); let mut s=String::new(); if io::stdin().read_line(&mut s).is_err(){return String::new()} s.trim().to_owned() }
 fn record_path() -> PathBuf { PathBuf::from(env::var("RUST_COACH_JOURNAL").unwrap_or_else(|_| "../rust-learning-journal/responses/session.jsonl".into())) }
-fn prior_topics() -> Vec<String> { let mut out=Vec::new(); if let Ok(data)=fs::read_to_string(record_path()){for line in data.lines(){if let Ok(r)=serde_json::from_str::<Record>(line){if r.score<3 {out.push(r.topic)}}}} out }
+fn history() -> Vec<Record> { let mut out=Vec::new(); if let Ok(data)=fs::read_to_string(record_path()){for line in data.lines(){if let Ok(r)=serde_json::from_str::<Record>(line){out.push(r)}}} out }
 fn choose(topic: Option<&str>, level: u8) -> &'static Exercise { EXERCISES.iter().find(|e| Some(e.topic)==topic).or_else(|| EXERCISES.iter().find(|e| e.level<=level)).unwrap_or(&EXERCISES[0]) }
 fn ask_jev(ex: &Exercise, answer: &str) -> Option<(u8, Option<f64>, String)> {
  let key=env::var("TYPESAFE_API_KEY").ok()?;
@@ -44,7 +44,11 @@ fn feedback(score:u8, topic:&str, diagnosis:&str, answer:&str, hint:&str)->Strin
 }
 fn main(){
  println!("\n🦀 Rust Steps — a small, adaptive Rust practice coach\nType `quit` to stop. Progress is saved to your learner journal.\n");
- let weak=prior_topics(); let level=if weak.is_empty(){1}else{2}; let selected=if let Some(t)=weak.first(){choose(Some(t),level)}else{choose(None,level)};
+ let history=history();
+ let weak=history.iter().find(|r|r.score<3);
+ let selected=if let Some(r)=weak { choose(Some(&r.topic),r.level) } else if let Some(last)=history.last() {
+  EXERCISES.iter().find(|e|e.id==last.next_exercise).unwrap_or(&EXERCISES[0])
+ } else { &EXERCISES[0] };
  println!("Exercise {} · {} · level {}\n{}\n",selected.id,selected.topic,selected.level,selected.prompt);
  println!("Tip: answer in your own words. For code prompts, include a code snippet.");
  let answer=input("\nYour answer> "); if answer.eq_ignore_ascii_case("quit"){return} if answer.is_empty(){println!("No answer recorded.");return}
