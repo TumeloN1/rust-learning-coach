@@ -379,7 +379,7 @@ fn display_timestamp(timestamp: u64) -> String {
     let month_prime = (5 * day_of_year + 2) / 153;
     let day = day_of_year - (153 * month_prime + 2) / 5 + 1;
     let month = month_prime + if month_prime < 10 { 3 } else { -9 };
-    year += i64::from(month <= 2);
+    year += if month <= 2 { 1 } else { 0 };
     let hour = day_seconds / 3_600;
     let minute = day_seconds % 3_600 / 60;
     let second = day_seconds % 60;
