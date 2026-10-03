@@ -1,6 +1,6 @@
 # Rust Steps
 
-An adaptive, terminal-based Rust learning coach. It presents a lesson overview, goals, and a small example before each quiz. After you answer, it gives a score, explains the idea, identifies a concept to revisit, and recommends what to study next.
+An adaptive command-line Rust tutor. Every run begins with an in-depth topic overview, a concept walkthrough, learning goals, a code example, and a common pitfall before asking one quiz question. There are 26 curated exercises from beginner fundamentals through ownership, error handling, traits, testing, smart pointers, and concurrency.
 
 ## Run
 
@@ -8,8 +8,10 @@ An adaptive, terminal-based Rust learning coach. It presents a lesson overview, 
 cargo run
 ```
 
-Set `TYPESAFE_API_KEY` in your shell to enable TypeSafe Jev's structured score and concept diagnosis. Jev returns decisions, not prose; Rust Steps turns the result into written teaching feedback using its lesson guide. Without a key, the app labels and uses a basic local length-based score. Set `JEV_MODEL` to pin a model version if desired.
+For TypeSafe grading, export `TYPESAFE_API_KEY` in the same Terminal session that runs `cargo run`. Jev provides the structured score and concept diagnosis. If the key is missing, invalid, or the request fails, the app says why and uses a clearly labeled local topic-keyword checklist rather than answer length.
 
-After every completed exercise, the app appends a progress record to the sibling journal repo, creates a readable Markdown page under `sessions/`, commits both artifacts, and pushes them to `origin`. Make sure the journal repo is cloned/available at `../rust-learning-journal` and has a working GitHub remote and authentication. Override the JSONL location with `RUST_COACH_JOURNAL=/path/to/journal/responses/session.jsonl`; with custom paths, the Markdown session folder and Git repo root are inferred from the same journal directory layout.
+For detailed answer-specific prose feedback, optionally set `OPENAI_API_KEY`. The app sends the exercise, answer, lesson notes, and structured assessment to OpenAI's Responses API. Set `OPENAI_MODEL` to choose a model (defaults to `gpt-6-astra`). If the key is absent, Rust Steps shows its built-in topic explanation and states that personalized prose feedback is off. Never commit API keys.
 
-The exercise set is curated in the source code. `cargo run` presents one exercise per run; there is no automatic schedule.
+Each completed run creates a Markdown page under the sibling `rust-learning-journal/sessions/` folder. The page contains the full session and a hidden metadata comment used to adapt future exercise selection. The app commits and pushes that Markdown file to `origin`; it does not write JSONL. Keep the journal repository private because it contains your answers.
+
+Set `RUST_COACH_JOURNAL=/path/to/rust-learning-journal` to change the journal repository location. For compatibility, an old path ending in `/responses/session.jsonl` or `/responses` is also accepted, but the app will still save Markdown only.
